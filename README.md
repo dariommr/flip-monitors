@@ -35,6 +35,26 @@ The script's `$cmm` variable must point to the extracted `ControlMyMonitor.exe`.
    Name** if that name is unique. If it is not unique, use a unique **Monitor
    Device Name** or **Short Monitor ID** instead.
 
+## Identify the input values
+
+The values for VCP feature `60` vary by monitor. Find the value for each input
+you want to switch between:
+
+1. In ControlMyMonitor, select the monitor and locate the row with VCP code
+   `60` (**Input Select**). Note its current **Value**.
+2. Use the monitor's physical buttons or on-screen menu (OSD) to switch to the
+   first input. Refresh ControlMyMonitor with **F5** and record the **Value**
+   shown for VCP `60`.
+3. Switch the monitor to the second input using its OSD, refresh again, and
+   record the new VCP `60` value.
+4. Use those two values as `InputA` and `InputB` when running the setup script,
+   or in the `/SwitchValue` command. For example, if the displayed values are
+   `15` and `18`, use `15` and `18`.
+
+Keep the monitor identifier the same while checking both inputs. If the VCP
+`60` row is unavailable or its value does not change, the monitor may not expose
+input selection through DDC/CI; check the monitor settings and documentation.
+
 ## 3. Configure the script
 
 Open [flip-monitors.ps1](./flip-monitors.ps1) in a text editor and update:
