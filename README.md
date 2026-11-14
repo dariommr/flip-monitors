@@ -148,7 +148,18 @@ explorer "shell:startup"
 
 To stop it starting automatically, remove the shortcut from the Startup folder.
 
-## 5. Run the setup script
+## 5. Run the PowerShell script manually
+
+Open PowerShell in the script's folder and run:
+
+```powershell
+.\flip-monitors.ps1
+```
+
+If PowerShell prevents the script from running, follow your organization's
+execution-policy guidance rather than changing the machine-wide policy.
+
+## [Alternative] Run the setup script
 
 From PowerShell in the folder containing the project files, run:
 
@@ -167,13 +178,3 @@ This script will:
 
 Adjust the values for your monitor and the two supported input codes if needed.
 
-## 6. Run the PowerShell script manually
-
-Open PowerShell in the script's folder and run:
-
-```powershell
-.\flip-monitors.ps1
-```
-
-If PowerShell prevents the script from running, follow your organization's
-execution-policy guidance rather than changing the machine-wide policy.
