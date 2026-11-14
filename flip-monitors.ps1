@@ -1,5 +1,5 @@
-$cmm = "C:\Users\dario.menten\Documents\controlmymonitor\ControlMyMonitor.exe"
-$monitorName = "DP1"
+$cmm = "C:\Users\Dario\Tools\ControlMyMonitor\ControlMyMonitor.exe"
+$monitorName = "HDMI2"
 
 # SwitchValue reads VCP 60 and sets the other input in a single invocation.
 & $cmm /SwitchValue $monitorName 60 15 18

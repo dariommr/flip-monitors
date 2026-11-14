@@ -40,12 +40,41 @@ The script's `$cmm` variable must point to the extracted `ControlMyMonitor.exe`.
 Open [flip-monitors.ps1](./flip-monitors.ps1) in a text editor and update:
 
 ```powershell
-$cmm = "C:\path\to\ControlMyMonitor.exe"
+$cmm = (Resolve-Path (Join-Path $installDir "ControlMyMonitor.exe")).Path
 $monitorName = "DP1"
 ```
 
-Set `$cmm` to the executable's actual path and `$monitorName` to the unique
-identifier you found in the previous step.
+Set `$cmm` to the executable's resolved path from the install step and
+`$monitorName` to the unique identifier you found in the previous step.
+
+If you want to update the script automatically from PowerShell instead of
+editing the file in a text editor, run:
+
+```powershell
+$ps1Path = Join-Path $PSScriptRoot "flip-monitors.ps1"
+$cmm = (Resolve-Path (Join-Path $installDir "ControlMyMonitor.exe")).Path
+$monitorName = "DP1"
+
+$content = Get-Content $ps1Path -Raw
+$content = $content -replace '\$cmm = ".*?"', "`$cmm = `"$cmm`""
+$content = $content -replace '\$monitorName = ".*?"', "`$monitorName = `"$monitorName`""
+Set-Content -Path $ps1Path -Value $content
+```
+
+This updates the actual `$cmm` line in [flip-monitors.ps1](./flip-monitors.ps1)
+to the resolved executable path from the install step.
+
+The same idea applies to the AutoHotkey file. Update the PowerShell path inside
+`flip-monitor.ahk` to match your script location:
+
+```powershell
+$ahkPath = Join-Path $PSScriptRoot "flip-monitor.ahk"
+$scriptPath = Join-Path $PSScriptRoot "flip-monitors.ps1"
+
+(Get-Content $ahkPath) `
+  -replace 'C:\\Users\\dario\\.menten\\Documents\\controlmymonitor\\script\\flip-monitors.ps1', $scriptPath |
+  Set-Content $ahkPath
+```
 
 The final command switches VCP 60 between values `15` and `18`:
 
@@ -80,15 +109,45 @@ To run the hotkey script each time you sign in to Windows:
 
 1. Press **Win+R**, enter `shell:startup`, and press **Enter** to open your
    personal Startup folder.
-2. Create a shortcut to `flip-monitors.ahk` in that folder. You can do this by
-   right-clicking the `.ahk` file, choosing **Create shortcut**, then moving
-   the shortcut into the Startup folder.
+2. Copy the `.ahk` file into that folder:
+
+```powershell
+$startupFolder = [Environment]::GetFolderPath('Startup')
+$ahkFile = Join-Path $PSScriptRoot "flip-monitor.ahk"
+Copy-Item $ahkFile (Join-Path $startupFolder "flip-monitor.ahk")
+```
+
+   You can also open the Startup folder directly with:
+
+```powershell
+explorer "shell:startup"
+```
+
 3. Sign out and back in, or restart Windows. The AutoHotkey tray icon should
    appear, and **Ctrl+Alt+1** will be available.
 
 To stop it starting automatically, remove the shortcut from the Startup folder.
 
-## 5. Run the PowerShell script manually
+## 5. Run the setup script
+
+From PowerShell in the folder containing the project files, run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\setup-flip-monitors.ps1 -MonitorName "DP1" -InputA 15 -InputB 18 -StartHotkey
+```
+
+This script will:
+
+- download and extract ControlMyMonitor
+- download and install AutoHotkey v2 from the official installer
+- update [flip-monitors.ps1](./flip-monitors.ps1) with the resolved executable path and monitor name
+- update [flip-monitor.ahk](./flip-monitor.ahk) to point to the script in this folder
+- copy the AutoHotkey file into your Startup folder so it runs on sign-in
+- optionally start the hotkey immediately
+
+Adjust the values for your monitor and the two supported input codes if needed.
+
+## 6. Run the PowerShell script manually
 
 Open PowerShell in the script's folder and run:
 
